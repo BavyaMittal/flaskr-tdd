@@ -5,6 +5,12 @@ from flask import Flask, g, render_template, request, session, \
                   flash, redirect, url_for, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), nullable=False)
+    text = db.Column(db.Text, nullable=False)
 
 basedir = Path(__file__).resolve().parent
 
@@ -82,6 +88,14 @@ def delete_entry(post_id):
     except Exception as e:
         result = {'status': 0, 'message': repr(e)}
     return jsonify(result)
+    
+@app.route('/search/', methods=['GET'])
+def search():
+    query = request.args.get("query")
+    entries = db.session.query(models.Post)
+    if query:
+        return render_template('search.html', entries=entries, query=query)
+    return render_template('search.html')
 
 
 if __name__ == "__main__":

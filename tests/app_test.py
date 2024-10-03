@@ -81,3 +81,15 @@ def test_delete_message(client):
     rv = client.get('/delete/1')
     data = json.loads(rv.data)
     assert data["status"] == 1
+    
+def test_search(client):
+    """Test the search functionality"""
+    # Simulate a search query
+    rv = client.get('/search/?query=test_query', content_type="html/text")
+    # Ensure that the request was successful (HTTP 200 status)
+    assert rv.status_code == 200
+    # Check if the search query is in the response data
+    assert b"test_query" in rv.data
+    # Ensure that the entries are being rendered (for now, we will just check if the page renders)
+    assert b"Entries" in rv.data or b"No entries found" in rv.data
+
